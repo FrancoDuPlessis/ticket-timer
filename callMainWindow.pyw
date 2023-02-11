@@ -8,8 +8,12 @@ from datetime import datetime, timedelta
 # Local application/library specific imports
 from mainWindow import *
 
-ROOT_DIR = os.getcwd()
-path = f"{ROOT_DIR}\\timer_results.csv"
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+working_dir = os.chdir(dname)
+ROOT_DIR = working_dir
+
+cvs_file_path = f"{ROOT_DIR}\\timer_results.csv"
 
 
 class MyForm(QWidget):  # Main Window
@@ -68,7 +72,7 @@ class MyForm(QWidget):  # Main Window
         # assign header columns
         header_list = ['Client', 'Description', 'Hardware', 'Ticket No.', 'Start time', 'End Time', 'Duration']
 
-        if os.path.isfile(path):
+        if os.path.isfile(cvs_file_path):
             with open('timer_results.csv', 'a', newline='') as file:
                 writer = csv.writer(file, delimiter=';')
                 writer.writerow(
