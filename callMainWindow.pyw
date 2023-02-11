@@ -91,4 +91,4 @@ if __name__ == "__main__":
     app.setStyle('Fusion')  # 'Breeze', 'Oxygen', 'QtCurve', 'Windows', 'Fusion'
     myapp = MyForm()
     myapp.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
