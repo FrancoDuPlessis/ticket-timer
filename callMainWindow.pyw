@@ -4,6 +4,7 @@ import csv
 from datetime import datetime, timedelta
 
 # Related third party imports
+from PySide6.QtCore import QTimer
 
 # Local application/library specific imports
 from mainWindow import *
@@ -36,6 +37,13 @@ class MyForm(QWidget):  # Main Window
 
         self.ui.btn_stop.setEnabled(False)
 
+        self.hours = 0
+        self.minutes = 0
+        self.counter = 0
+        self.timer = QTimer()
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.recurring_timer)
+
         # Signals
         self.ui.btn_start.clicked.connect(self.assign_and_check_data)
         self.ui.btn_stop.clicked.connect(self.write_to_file)
@@ -56,6 +64,12 @@ class MyForm(QWidget):  # Main Window
             self.start_time = datetime.now()
             self.ui.txt_startTime.setText(f"{self.start_time.strftime('%H')}:{self.start_time.strftime('%M')}:"
                                           f"{self.start_time.strftime('%S')}")
+            
+            self.ui.lcdHours.display(0)
+            self.ui.lcdMinutes.display(0)
+            self.ui.lcdSeconds.display(0)
+            self.counter = 0
+            self.timer.start()
         else:
             print(f"Enter data for client, description, hardware, and ticket no.")
 
@@ -68,6 +82,7 @@ class MyForm(QWidget):  # Main Window
         self.delta_t = round((self.stop_time - self.start_time).total_seconds())
         self.elapsed_time = str(timedelta(seconds=self.delta_t))
         self.ui.txt_duration.setText(str(self.elapsed_time))
+        self.timer.stop()
 
         # assign header columns
         header_list = ['Client', 'Description', 'Hardware', 'Ticket No.', 'Start time', 'End Time', 'Duration']
@@ -88,6 +103,19 @@ class MyForm(QWidget):  # Main Window
                     [self.data_dict["client_name"], self.data_dict["work_description"], self.data_dict["hardware_used"],
                      self.data_dict["ticket_number"], self.start_time.strftime("%H:%M:%S"),
                      self.stop_time.strftime("%H:%M:%S"), self.elapsed_time])
+
+    def recurring_timer(self):
+        self.counter +=1
+        if self.counter == 60:
+            self.minutes += 1
+            self.counter = 0
+        if self.minutes == 60:
+            self.hours += 1
+            self.minutes = 0
+        # print(f"Counter Time: {self.hours}:{self.minutes}:{self.counter}")
+        self.ui.lcdHours.display(self.hours)
+        self.ui.lcdMinutes.display(self.minutes)
+        self.ui.lcdSeconds.display(self.counter)
 
 
 if __name__ == "__main__":
